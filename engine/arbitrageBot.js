@@ -84,9 +84,10 @@
 // handling in case of errors below
 const { getBinanceBidAsk, placeBinanceBuy, placeBinanceSell } = require('../services/binance');
 const { getCoinbasePrice, placeCoinbaseBuy, placeCoinbaseSell } = require('../services/coinbase');
+const { getDynamicThreshold } = require('../services/openai');
 const db = require('../db');
 
-const SPREAD_THRESHOLD = 0.5; // percent
+// const SPREAD_THRESHOLD = 0.5; // percent
 const TRADE_AMOUNT_USD = 20; // USD amount per trade
 
 // Retry helper
@@ -110,8 +111,12 @@ async function checkAndExecuteArbitrage() {
   try {
     const binance = await getBinanceBidAsk('BTCUSDT'); // { bid, ask }
     const coinbase = await getCoinbasePrice('BTC-USD'); // { bid, ask }
-
+    
     const midPrice = (binance.bid + binance.ask + coinbase.bid + coinbase.ask) / 4;
+
+    const marketDataSummary = `Binance bid: ${binance.bid}, ask: ${binance.ask}, Coinbase bid: ${coinbase.bid}, ask: ${coinbase.ask}`;
+    
+    const SPREAD_THRESHOLD = await getDynamicThreshold(marketDataSummary);
 
     // Spread if buying on Binance (lower ask) and selling on Coinbase (higher bid)
     const spreadBinanceBuy = calculateSpread(binance.ask, coinbase.bid);

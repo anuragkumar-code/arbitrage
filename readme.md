@@ -21,6 +21,7 @@ This is the backend service for a **real-time crypto arbitrage trading bot**. It
 - **MySQL** (for trade logging)
 - **Binance REST API**
 - **Coinbase Advanced Trade API**
+- **Open AI** for calculating spread % as per market
 - **dotenv** for secrets
 - **Modular** service-based structure
 
@@ -38,4 +39,6 @@ This is the backend service for a **real-time crypto arbitrage trading bot**. It
 ## 🚀 Set up environment variables
 
 ## ⚙️ Run the Bot
-# node engine/runner.js
+- **npm run dev**
+
+---
