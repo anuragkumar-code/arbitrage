@@ -1,6 +1,16 @@
-const { setIntervalAsync } = require('set-interval-async/fixed');
-const checkAndExecuteArbitrage = require('./arbitrageBot');
+const checkAndExecuteMultiExchangeArbitrage = require('./multiExchangeArbitrage');
 
-setIntervalAsync(async () => {
-  await checkAndExecuteArbitrage();
-}, 5000); // check every 5 seconds
+const CHECK_INTERVAL_MS = 5000; // Check every 5 seconds
+
+async function runArbitrageLoop() {
+  while (true) {
+    try {
+      await checkAndExecuteMultiExchangeArbitrage();
+    } catch (err) {
+      console.error('Error in arbitrage loop:', err.message);
+    }
+    await new Promise(resolve => setTimeout(resolve, CHECK_INTERVAL_MS));
+  }
+}
+
+runArbitrageLoop();
