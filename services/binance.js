@@ -7,8 +7,8 @@ const binance = new Binance().options({
 });
 
 async function getBinancePrice(symbol = 'BTCUSDT') {
-  const { price } = await binance.prices(symbol);
-  return parseFloat(price);
+  const prices = await binance.prices();
+  return parseFloat(prices[symbol]);
 }
 
 async function placeBinanceBuy(symbol = 'BTCUSDT', quantity) {
@@ -24,9 +24,21 @@ async function getBinanceBalance(asset = 'BTC') {
   return balances[asset]?.available || 0;
 }
 
+async function getBinanceBidAsk(symbol = 'BTCUSDT') {
+  const tickers = await binance.bookTickers();
+  const ticker = tickers[symbol];
+  if (!ticker) throw new Error(`Symbol ${symbol} not found in Binance tickers`);
+  return {
+    bid: parseFloat(ticker.bidPrice),
+    ask: parseFloat(ticker.askPrice),
+  };
+}
+
+
 module.exports = {
   getBinancePrice,
   placeBinanceBuy,
   placeBinanceSell,
   getBinanceBalance,
+  getBinanceBidAsk
 };
